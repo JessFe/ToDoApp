@@ -1,0 +1,19 @@
+# Build
+backend/ToDoApp/ToDoApp/bin/
+backend/ToDoApp/ToDoApp/obj/
+
+# Config files
+backend/ToDoApp/ToDoApp/appsettings.json
+backend/ToDoApp/ToDoApp/appsettings.Development.json
+
+# IDE
+*.user
+*.suo
+.vscode/
+
+# OS junk
+Thumbs.db
+.DS_Store
+
+.vs/
+
