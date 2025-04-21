@@ -4,12 +4,12 @@ using System.Data;
 namespace ToDoApp.Data
 {
     // Questa classe si occupa di aprire connessioni al DB e lanciare query
-    public class DatabaseService
+    public class DbHandler
     {
         private readonly string _connectionString;
 
         // Il costruttore legge la connection string da appsettings.json
-        public DatabaseService(IConfiguration configuration)
+        public DbHandler(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("ToDoAppConnection")!;
             // "!" indica che la connection string non sarà mai null (configurata in appsettings.json).
