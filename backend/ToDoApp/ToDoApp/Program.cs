@@ -14,6 +14,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<DbHandler>();
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<ListRepository>();
+builder.Services.AddScoped<ListService>();
+builder.Services.AddScoped<TaskRepository>();
+builder.Services.AddScoped<TaskService>();
+
+
 
 var app = builder.Build();
 
