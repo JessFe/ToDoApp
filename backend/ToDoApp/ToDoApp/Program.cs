@@ -1,6 +1,11 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using ToDoApp.Data;
+using ToDoApp.Helpers;
 using ToDoApp.Repositories;
 using ToDoApp.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +24,29 @@ builder.Services.AddScoped<ListService>();
 builder.Services.AddScoped<TaskRepository>();
 builder.Services.AddScoped<TaskService>();
 
+builder.Services.AddScoped<JwtService>();
+
+
+// Configurazione JWT per generare e validare i token e proteggere le rotte con [Authorize]
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)
+            )
+        };
+    });
+
+builder.Services.AddAuthorization();
+//
 
 
 var app = builder.Build();
@@ -31,6 +59,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication(); // jwt
 
 app.UseAuthorization();
 

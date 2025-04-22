@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ToDoApp.Models;
 using ToDoApp.Services;
 
 namespace ToDoApp.Controllers
 {
+    [Authorize]
     [ApiController]
     //[Route("api/[controller]")]
     [Route("api/tasks")]
