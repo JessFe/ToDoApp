@@ -27,6 +27,19 @@ builder.Services.AddScoped<TaskService>();
 builder.Services.AddScoped<JwtService>();
 
 
+var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy =>
+        {
+            policy.WithOrigins(allowedOrigins ?? new string[0])
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
+
 // Configurazione JWT per generare e validare i token e proteggere le rotte con [Authorize]
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -59,6 +72,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowFrontend"); // cors
 
 app.UseAuthentication(); // jwt
 

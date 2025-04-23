@@ -1,9 +1,17 @@
+import { BrowserRouter, Routes, Route, Navigate } from "react-router";
+import AccessPage from "./pages/AccessPage";
+// import HomePage from "./pages/HomePage"; // placeholder
+
 function App() {
   return (
-    <>
-      <h1>hello</h1>
-      <button className="btn btn-primary">Click</button>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="/login" element={<AccessPage />} />
+        <Route path="/register" element={<AccessPage />} />
+        {/* <Route path="/home" element={<HomePage />} /> */}
+      </Routes>
+    </BrowserRouter>
   );
 }
 export default App;

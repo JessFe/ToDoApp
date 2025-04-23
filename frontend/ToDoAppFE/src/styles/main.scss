@@ -2,3 +2,11 @@ $primary: #7c3aed;
 $body-bg: #ddd;
 
 @import "bootstrap/scss/bootstrap";
+
+.fs-7 {
+  font-size: 0.875rem;
+}
+
+.log-card {
+  min-width: 420px;
+}
