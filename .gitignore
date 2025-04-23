@@ -1,19 +1,37 @@
-# Build
+# ─── BACKEND ─────────────────────────────────────────
 backend/ToDoApp/ToDoApp/bin/
 backend/ToDoApp/ToDoApp/obj/
-
-# Config files
 backend/ToDoApp/ToDoApp/appsettings.json
 backend/ToDoApp/ToDoApp/appsettings.Development.json
 
-# IDE
+# ─── FRONTEND ────────────────────────────────────────
+frontend/ToDoAppFE/node_modules
+frontend/ToDoAppFE/dist
+frontend/ToDoAppFE/dist-ssr
+frontend/ToDoAppFE/.env
+
+# ─── LOGS ─────────────────────────────────────────────
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ─── EDITOR / OS JUNK ────────────────────────────────
+.vscode/
+!.vscode/extensions.json
+.idea
+.vs/
 *.user
 *.suo
-.vscode/
-
-# OS junk
-Thumbs.db
+*.sln
+*.ntvs*
+*.njsproj
+*.sw?
 .DS_Store
+Thumbs.db
 
-.vs/
-
+# ─── LOCAL CONFIG FILES ───────────────────────────────
+*.local
