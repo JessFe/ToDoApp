@@ -23,6 +23,8 @@ type FiltersContextType = {
   setListsFilter: (listIds: number[]) => void;
   setBackground: (color: FilterBackground) => void;
   loadUserLists: () => void;
+  reloadTasks?: () => void;
+  setReloadTasks?: (fn: () => void) => void;
 };
 
 const FiltersContext = createContext<FiltersContextType | undefined>(undefined);
@@ -48,6 +50,7 @@ export const FiltersContextProvider = ({ children }: { children: React.ReactNode
   const [listsFilter, setListsFilter] = useState<number[]>([]);
   const [background, setBackground] = useState<FilterBackground>(getInitialBackground());
   const [userLists, setUserLists] = useState<List[]>([]);
+  const [reloadTasks, setReloadTasks] = useState<(() => void) | undefined>(undefined);
 
   const { user, token } = useUserContext();
 
@@ -87,6 +90,8 @@ export const FiltersContextProvider = ({ children }: { children: React.ReactNode
         setListsFilter,
         setBackground,
         loadUserLists,
+        reloadTasks,
+        setReloadTasks,
       }}
     >
       {children}

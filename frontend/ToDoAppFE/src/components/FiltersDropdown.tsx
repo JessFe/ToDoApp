@@ -1,4 +1,6 @@
 import { useFiltersContext } from "../context/FiltersContext";
+import ManageListsModal from "./ManageListsModal";
+import { useState } from "react";
 
 const allStatusOptions: ("To Do" | "Doing" | "Done")[] = ["To Do", "Doing", "Done"];
 const allTimeOptions = ["All", "Today", "3 days", "7 days", "14 days", "30 days"];
@@ -16,6 +18,8 @@ const FiltersDropdown = () => {
     listsFilter,
     setListsFilter,
   } = useFiltersContext();
+
+  const [showManageModal, setShowManageModal] = useState(false);
 
   // Controlla se "All" è selezionato
   const isAllStatusSelected = allStatusOptions.every((s) => statusFilter.includes(s));
@@ -156,9 +160,17 @@ const FiltersDropdown = () => {
             </div>
           ))}
         </div>
-        <div className="mt-2">
-          <a href="#" className="small text-decoration-underline" onClick={(e) => e.preventDefault()}>
-            Manage Lists
+        <div className="mt-3">
+          <a
+            href="#"
+            className="small text-decoration-underline fs-8"
+            onClick={(e) => {
+              e.preventDefault();
+              setShowManageModal(true);
+            }}
+          >
+            <i className="bi bi-gear text-black-50 fs-7 me-2"></i>
+            Manage your Lists
           </a>
         </div>
       </div>
@@ -180,6 +192,8 @@ const FiltersDropdown = () => {
           ))}
         </select>
       </div>
+
+      {showManageModal && <ManageListsModal onClose={() => setShowManageModal(false)} />}
     </div>
   );
 };

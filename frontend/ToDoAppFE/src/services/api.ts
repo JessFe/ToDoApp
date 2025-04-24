@@ -1,4 +1,6 @@
 import { Task } from "../types";
+import { List } from "../context/FiltersContext";
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 //#region AUTH
@@ -117,6 +119,73 @@ export const getListsByUserId = async (userId: number, token: string) => {
   } catch (error) {
     console.error("Get lists error:", error);
     return { success: false, message: "An error occurred while fetching lists" };
+  }
+};
+
+export const createList = async (data: { name: string; color: string; userId: number }, token: string) => {
+  try {
+    const response = await fetch(`${API_URL}/api/lists`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const result = await response.json();
+      return { success: false, message: result.message || "Failed to create list" };
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Create list error:", error);
+    return { success: false, message: "An error occurred while creating list" };
+  }
+};
+
+export const updateList = async (list: List, token: string) => {
+  try {
+    const response = await fetch(`${API_URL}/api/lists`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(list),
+    });
+
+    if (!response.ok) {
+      const result = await response.json();
+      return { success: false, message: result.message || "Failed to update list" };
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Update list error:", error);
+    return { success: false, message: "An error occurred while updating list" };
+  }
+};
+
+export const deleteList = async (listId: number, token: string) => {
+  try {
+    const response = await fetch(`${API_URL}/api/lists/${listId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const result = await response.json();
+      return { success: false, message: result.message || "Failed to delete list" };
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Delete list error:", error);
+    return { success: false, message: "An error occurred while deleting list" };
   }
 };
 

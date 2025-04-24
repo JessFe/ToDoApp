@@ -7,7 +7,7 @@ import { Task } from "../types";
 
 const KanbanView = () => {
   const { user, token } = useUserContext();
-  const { statusFilter, listsFilter, timeFilter } = useFiltersContext();
+  const { statusFilter, listsFilter, timeFilter, setReloadTasks } = useFiltersContext();
 
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
@@ -16,20 +16,17 @@ const KanbanView = () => {
   useEffect(() => {
     const fetchTasks = async () => {
       if (!user?.id || !token) return;
-
       const result = await getTasksByUserId(user.id, token);
-
-      if (!result.success) {
-        setError(result.message);
-      } else {
-        setTasks(result.data);
-      }
-
+      if (result.success) setTasks(result.data);
+      else setError(result.message);
       setLoading(false);
     };
 
     fetchTasks();
-  }, [user, token]);
+    if (setReloadTasks) {
+      setReloadTasks(() => fetchTasks);
+    }
+  }, [user, token, setReloadTasks]);
 
   // Cambia lo status e aggiorna localmente
   const handleStatusChange = async (taskId: number, newStatus: Task["status"]) => {
