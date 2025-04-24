@@ -19,7 +19,11 @@ namespace ToDoApp.Repositories
         // Recupera tutti i task di un utente
         public async Task<List<TaskItem>> TasksGetAll(int userId)
         {
-            var query = "SELECT * FROM Tasks WHERE UserId = @UserId";
+            var query = @"
+                        SELECT t.*, l.Name AS ListName, l.Color AS ListColor
+                        FROM Tasks t
+                        LEFT JOIN Lists l ON t.ListId = l.Id
+                        WHERE t.UserId = @UserId";
 
             var parameters = new List<SqlParameter>
             {
@@ -27,23 +31,6 @@ namespace ToDoApp.Repositories
             };
 
             var table = await _dbHandler.ExecuteQueryAsync(query, parameters);
-
-            //var list = new List<TaskItem>();
-            //foreach (DataRow row in table.Rows)
-            //{
-            //    list.Add(new TaskItem
-            //    {
-            //        Id = (int)row["Id"],
-            //        UserId = (int)row["UserId"],
-            //        ListId = row["ListId"] == DBNull.Value ? null : (int?)row["ListId"],
-            //        Title = (string)row["Title"],
-            //        Description = row["Description"] == DBNull.Value ? null : (string)row["Description"],
-            //        DueDate = (DateTime)row["DueDate"],
-            //        Status = (string)row["Status"]
-            //    });
-            //}
-
-            //return list;
 
             return ConvertToTaskList(table);
         }
@@ -57,12 +44,20 @@ namespace ToDoApp.Repositories
             if (listId == 0)
             {
                 // Cerca i task senza lista
-                query = "SELECT * FROM Tasks WHERE ListId IS NULL";
+                query = @"
+                        SELECT t.*, l.Name AS ListName, l.Color AS ListColor
+                        FROM Tasks t
+                        LEFT JOIN Lists l ON t.ListId = l.Id
+                        WHERE t.ListId IS NULL";
             }
             else
             {
                 // Cerca i task della lista specificata
-                query = "SELECT * FROM Tasks WHERE ListId = @ListId";
+                query = @"
+                        SELECT t.*, l.Name AS ListName, l.Color AS ListColor
+                        FROM Tasks t
+                        LEFT JOIN Lists l ON t.ListId = l.Id
+                        WHERE t.ListId = @ListId";
                 parameters.Add(new SqlParameter("@ListId", listId));
             }
 
@@ -86,7 +81,10 @@ namespace ToDoApp.Repositories
                     Title = (string)row["Title"],
                     Description = row["Description"] == DBNull.Value ? null : (string)row["Description"],
                     DueDate = (DateTime)row["DueDate"],
-                    Status = (string)row["Status"]
+                    Status = (string)row["Status"],
+                    ListName = row.Table.Columns.Contains("ListName") && row["ListName"] != DBNull.Value ? (string)row["ListName"] : null,
+                    ListColor = row["ListColor"] == DBNull.Value ? "gray" : (string)row["ListColor"]
+
                 });
             }
             return list;
