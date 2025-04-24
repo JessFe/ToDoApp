@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router";
 import AccessPage from "./pages/AccessPage";
-// import HomePage from "./pages/HomePage"; // placeholder
+import HomePage from "./pages/HomePage";
 
 function App() {
   return (
@@ -9,7 +9,7 @@ function App() {
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/login" element={<AccessPage />} />
         <Route path="/register" element={<AccessPage />} />
-        {/* <Route path="/home" element={<HomePage />} /> */}
+        <Route path="/home" element={<HomePage />} />
       </Routes>
     </BrowserRouter>
   );

@@ -1,10 +1,18 @@
 $primary: #7c3aed;
-$body-bg: #ddd;
+$body-bg: #eee;
 
+@import "_custom-colors";
 @import "bootstrap/scss/bootstrap";
 
-.fs-7 {
-  font-size: 0.875rem;
+$font-sizes: (
+  7: 0.875rem,
+  8: 0.8rem,
+);
+
+@each $index, $size in $font-sizes {
+  .fs-#{$index} {
+    font-size: $size;
+  }
 }
 
 .log-card {
