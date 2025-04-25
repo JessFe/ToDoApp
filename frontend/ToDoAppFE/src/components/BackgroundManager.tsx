@@ -2,10 +2,12 @@ import { useEffect } from "react";
 import { useFiltersContext } from "../context/FiltersContext";
 
 const BackgroundManager = () => {
-  const { background } = useFiltersContext();
+  const { background } = useFiltersContext();       // Estrae il valore background dal FiltersContext
 
+  // ogni volta che cambia il valore di background..
   useEffect(() => {
-    document.body.classList.remove(
+    // Prima rimuove tutte le possibili classi di background dal body
+    document.body.classList.remove(    // pulizia prima di aggiungere la nuova classe
       "bg-gray",
       "bg-teal-100",
       "bg-indigo-100",
@@ -15,6 +17,7 @@ const BackgroundManager = () => {
       "bg-pink-100"
     );
 
+    // Poi aggiunge la classe corrispondente al colore selezionato
     if (background === "gray") document.body.classList.add("bg-gray");
     if (background === "green") document.body.classList.add("bg-teal-100");
     if (background === "purple") document.body.classList.add("bg-indigo-100");
@@ -24,7 +27,7 @@ const BackgroundManager = () => {
     if (background === "pink") document.body.classList.add("bg-pink-100");
 
     return () => {
-      document.body.classList.remove(
+      document.body.classList.remove(     // pulizia quando cambia
         "bg-gray",
         "bg-teal-100",
         "bg-indigo-100",
@@ -36,7 +39,7 @@ const BackgroundManager = () => {
     };
   }, [background]);
 
-  return null;
+  return null;   // Il componente non renderizza nulla a schermo
 };
 
 export default BackgroundManager;

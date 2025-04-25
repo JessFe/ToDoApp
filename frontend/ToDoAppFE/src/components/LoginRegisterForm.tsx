@@ -1,12 +1,13 @@
 import { useState } from "react";
 
+// Tipi delle props che il componente si aspetta
 type Props = {
   mode: "login" | "register";
-  onSubmit: (data: { username: string; password: string; name?: string }) => void;
+  onSubmit: (data: { username: string; password: string; name?: string }) => void;  // Callback da chiamare al submit
 };
 
 const LoginRegisterForm = ({ mode, onSubmit }: Props) => {
-  // Stato dei campi input
+  // Stato locale dei campi input
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -22,12 +23,13 @@ const LoginRegisterForm = ({ mode, onSubmit }: Props) => {
     // Reset eventuale errore precedente
     setError("");
 
-    // Validazione
+    // Validazione Login
     if (mode === "login" && (!username || !password)) {
       setError("Please enter both username and password.");
       return;
     }
 
+    // Validazione Registrazione
     if (mode === "register") {
       if (!name.trim()) {
         setError("Insert your name.");
@@ -54,7 +56,7 @@ const LoginRegisterForm = ({ mode, onSubmit }: Props) => {
     onSubmit({
       username,
       password,
-      ...(mode === "register" && { name }),
+      ...(mode === "register" && { name }),   // Aggiunge "name" solo se registrazione
     });
   };
 

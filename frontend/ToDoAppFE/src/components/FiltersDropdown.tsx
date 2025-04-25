@@ -2,11 +2,14 @@ import { useFiltersContext } from "../context/FiltersContext";
 import ManageListsModal from "./ManageListsModal";
 import { useState } from "react";
 
+// Opzioni per filtri Status, Time, Tema - per generare le checkbox e i select option
 const allStatusOptions: ("To Do" | "Doing" | "Done")[] = ["To Do", "Doing", "Done"];
 const allTimeOptions = ["All", "Today", "3 days", "7 days", "14 days", "30 days"];
 const allBackgroundOptions = ["gray", "green", "purple", "blue", "orange", "yellow", "pink"];
+// TODO: Estrarre queste opzioni in un file condiviso
 
 const FiltersDropdown = () => {
+  // Destruttura i filtri e i metodi dal context
   const {
     statusFilter,
     setStatusFilter,
@@ -19,18 +22,21 @@ const FiltersDropdown = () => {
     setListsFilter,
   } = useFiltersContext();
 
+  // Stato per mostrare/nascondere la modale Manage your Lists
   const [showManageModal, setShowManageModal] = useState(false);
 
-  // Controlla se "All" è selezionato
+  // Controlla se tutti gli status sono selezionati
   const isAllStatusSelected = allStatusOptions.every((s) => statusFilter.includes(s));
 
+  // Gestisce il cambio selezione dei checkbox Status
   const handleStatusChange = (status: string) => {
     if (status === "All") {
+      // Se "All" è selezionato, toglie tutto o seleziona tutto
       setStatusFilter(isAllStatusSelected ? [] : allStatusOptions);
       return;
     }
 
-    // Aggiunge o rimuove lo status dalla selezione
+    // Altrimenti, aggiunge o rimuove lo status dalla selezione
     const newStatus = statusFilter.includes(status as any)
       ? statusFilter.filter((s) => s !== status)
       : [...statusFilter, status as any];
@@ -38,15 +44,19 @@ const FiltersDropdown = () => {
     setStatusFilter(newStatus);
   };
 
+  // Tutti gli ID delle liste esistenti (+ "-1" che rappresenta "nessuna lista")
   const allListIds = [...userLists.map((l) => l.id), -1];
+  // Controlla se tutte le liste sono selezionate
   const isAllListsSelected = allListIds.every((id) => listsFilter.includes(id));
 
+  // Aggiunge o rimuove una singola lista dalla selezione
   const handleListToggle = (id: number) => {
     const updated = listsFilter.includes(id) ? listsFilter.filter((i) => i !== id) : [...listsFilter, id];
 
     setListsFilter(updated);
   };
 
+  // Seleziona o deseleziona tutte le liste contemporaneamente
   const handleToggleAllLists = () => {
     setListsFilter(isAllListsSelected ? [] : allListIds);
   };

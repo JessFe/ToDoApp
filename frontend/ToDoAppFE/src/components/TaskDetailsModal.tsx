@@ -1,10 +1,12 @@
 import { Task } from "../types";
 import { useState } from "react";
 import { useUserContext } from "../context/UserContext";
-import { useFiltersContext } from "../context/FiltersContext";
+import { useFiltersContext } from "../context/FiltersContext";   // per accedere a reloadTasks e liste utente
 import { editTask, deleteTask } from "../services/api";
 import ToastMessage from "./ToastMessage";
 
+
+// Tipi props ricevute
 type Props = {
   task: Task;
   onClose: () => void;
@@ -12,6 +14,7 @@ type Props = {
   onDeleteSuccess: () => void;
 };
 
+// Mappa dei colori delle liste
 const colorMap: Record<string, string> = {
   blue: "bg-cyan-100",
   green: "bg-teal-100",
@@ -20,6 +23,7 @@ const colorMap: Record<string, string> = {
   gray: "bg-light",
 };
 
+// Mappa dei colori per gli status
 const statusColorMap: Record<Task["status"], string> = {
   "To Do": "bg-cyan-100",
   Doing: "bg-yellow-100",
@@ -27,28 +31,30 @@ const statusColorMap: Record<Task["status"], string> = {
 };
 
 const TaskDetailsModal = ({ task, onClose, onEdit, onDeleteSuccess }: Props) => {
-  const { user, token } = useUserContext();
-  const { reloadTasks, userLists } = useFiltersContext();
+  const { user, token } = useUserContext();                     // Prende user e token 
+  const { reloadTasks, userLists } = useFiltersContext();       // Prende reloadTasks e liste
 
-  const [toast, setToast] = useState<{ message: string | React.ReactNode; type: "success" | "error" } | null>(null);
-  const [confirmingDelete, setConfirmingDelete] = useState(false);
-  const [localStatus, setLocalStatus] = useState<Task["status"]>(task.status);
+  const [toast, setToast] = useState<{ message: string | React.ReactNode; type: "success" | "error" } | null>(null);  // Stato per toast
+  const [localStatus, setLocalStatus] = useState<Task["status"]>(task.status);    // per gestire cambiamento di status  (dropdown)
 
+  // Aggiorna lo status della task
   const handleStatusChange = async (newStatus: Task["status"]) => {
     if (!token || !user) return;
 
+    // Crea una copia aggiornata della task
     const updatedTask = { ...task, status: newStatus, userId: user.id };
     const result = await editTask(updatedTask, token);
 
     if (result.success) {
-      setLocalStatus(newStatus);
-      reloadTasks?.();
+      setLocalStatus(newStatus);      // Aggiorna lo stato locale
+      reloadTasks?.();                // Ricarica le task
       setToast({ message: "Status updated", type: "success" });
     } else {
       setToast({ message: "Update failed", type: "error" });
     }
   };
 
+  // conferma eliminazione task
   const handleDelete = async () => {
     if (!token || !task.id) return;
 
@@ -70,6 +76,7 @@ const TaskDetailsModal = ({ task, onClose, onEdit, onDeleteSuccess }: Props) => 
     });
   };
 
+  // Conferma ed esegue la cancellazione
   const confirmDelete = async () => {
     if (!token || !task.id) return;
 
@@ -86,6 +93,7 @@ const TaskDetailsModal = ({ task, onClose, onEdit, onDeleteSuccess }: Props) => 
     }
   };
 
+  // Recupera il nome della lista a cui appartiene la task
   const listName = task.listId ? userLists.find((l) => l.id === task.listId)?.name ?? "Unknown list" : "No list";
 
   return (
@@ -100,7 +108,7 @@ const TaskDetailsModal = ({ task, onClose, onEdit, onDeleteSuccess }: Props) => 
           <div className="modal-body d-flex flex-column gap-3 pt-1">
             <div>
               <span className={`badge text-dark ${colorMap[task.listColor || ""] || "bg-secondary-subtle"} px-3`}>
-                {task.listName}
+                {listName}
               </span>
             </div>
             <div>
@@ -146,11 +154,11 @@ const TaskDetailsModal = ({ task, onClose, onEdit, onDeleteSuccess }: Props) => 
                     <i className="bi bi-clock me-1"></i>
                     {task.dueDate
                       ? new Date(task.dueDate).toLocaleDateString("en-GB", {
-                          weekday: "short",
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric",
-                        })
+                        weekday: "short",
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })
                       : "No due date"}
                   </div>
                 </div>

@@ -1,5 +1,6 @@
 import { Task } from "../types";
 
+// Mappa di colori per il colore delle liste
 const colorMap: Record<string, string> = {
   blue: "bg-cyan-100",
   green: "bg-teal-100",
@@ -8,13 +9,14 @@ const colorMap: Record<string, string> = {
   gray: "bg-light",
 };
 
-//prettier-ignore
+// Mappa di colori per lo stato della task
 const statusColorMap: Record<Task["status"], string> = {
   "To Do": "bg-cyan-100",
   "Doing": "bg-yellow-100",
   "Done": "bg-teal-100",
 };
 
+// Props accettate
 type KanbanCardProps = {
   task: Task;
   onStatusChange: (taskId: number, newStatus: Task["status"]) => void;
@@ -22,6 +24,7 @@ type KanbanCardProps = {
 };
 
 const KanbanCard = ({ task, onStatusChange, onClick }: KanbanCardProps) => {
+  // Funzione di utilità per troncare una descrizione troppo lunga
   const truncate = (text?: string) => {
     if (!text) return "";
     return text.length > 40 ? text.substring(0, 40) + ".." : text;
@@ -48,19 +51,18 @@ const KanbanCard = ({ task, onStatusChange, onClick }: KanbanCardProps) => {
           <i className="bi bi-clock me-1"></i>
           {task.dueDate
             ? new Date(task.dueDate).toLocaleDateString("en-GB", {
-                weekday: "short",
-                day: "2-digit",
-                month: "short",
-                year: "numeric",
-              })
+              weekday: "short",
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+            })
             : "No due date"}
         </span>
 
         <div className="dropdown">
           <button
-            className={`btn btn-sm btn-outline-secondary text-secondary dropdown-toggle py-0 ${
-              statusColorMap[task.status]
-            }`}
+            className={`btn btn-sm btn-outline-secondary text-secondary dropdown-toggle py-0 ${statusColorMap[task.status]
+              }`}
             type="button"
             data-bs-toggle="dropdown"
             aria-expanded="false"

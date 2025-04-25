@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
-import { useUserContext } from "../context/UserContext";
+import { useUserContext } from "../context/UserContext";   // per verificare se loggato
 import GreetingsBar from "../components/GreetingsBar";
 import KanbanView from "../components/KanbanView";
 import FiltersBar from "../components/FiltersBar";

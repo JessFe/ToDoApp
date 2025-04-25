@@ -4,11 +4,13 @@ $body-bg: #eee;
 @import "_custom-colors";
 @import "bootstrap/scss/bootstrap";
 
+// Definisce mappa di font-size personalizzati
 $font-sizes: (
   7: 0.875rem,
   8: 0.8rem,
 );
 
+// Genera classi fs-7, fs-8 dinamicamente
 @each $index, $size in $font-sizes {
   .fs-#{$index} {
     font-size: $size;
@@ -30,6 +32,7 @@ $font-sizes: (
   }
 }
 
+// Barra dei filtri (in alto su desktop, in basso su mobile)
 .filters-bar {
   position: sticky;
   top: 0;
@@ -46,6 +49,7 @@ $font-sizes: (
   }
 }
 
+// Dropdown dei filtri (si apre verso l'alto su mobile)
 .filters-dropdown {
   @media (max-width: 768px) {
     bottom: 100%;

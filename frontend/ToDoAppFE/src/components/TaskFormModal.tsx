@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
-import { List, useFiltersContext } from "../context/FiltersContext";
+import { useFiltersContext } from "../context/FiltersContext";
 import { useUserContext } from "../context/UserContext";
 import { createTask, editTask } from "../services/api";
 import { Task } from "../types";
 import ToastMessage from "./ToastMessage";
 
+// Tipo delle props che riceve la modale
 type TaskFormModalProps = {
   mode: "add" | "edit";
-  taskToEdit?: Task;
+  taskToEdit?: Task;     // Se modalità edit, task da modificare
   onClose: () => void;
   onSuccess: () => void; // per ricarica la lista e chiusura la modale
 };
@@ -16,26 +17,30 @@ const TaskFormModal = ({ mode, taskToEdit, onClose, onSuccess }: TaskFormModalPr
   const { user, token } = useUserContext();
   const { userLists, reloadTasks } = useFiltersContext();
 
+  // Stati locali dei campi del form
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [listId, setListId] = useState<number | null>(null);
   const [status, setStatus] = useState<Task["status"]>("To Do");
 
+  // Stato per i messaggi di feedback
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
 
+  // Se in modalità edit, precompila i campi col task passato
   useEffect(() => {
     if (mode === "edit" && taskToEdit) {
       setTitle(taskToEdit.title);
       setDescription(taskToEdit.description || "");
-      setDueDate(taskToEdit.dueDate?.split("T")[0] || "");
+      setDueDate(taskToEdit.dueDate?.split("T")[0] || "");  // Prende solo data, senza ora
       setListId(taskToEdit.listId);
       setStatus(taskToEdit.status);
     }
   }, [mode, taskToEdit]);
 
+  // salva una nuova task o aggiorna una esistente
   const handleSave = async () => {
-    if (!token || !user || !title || !dueDate) return;
+    if (!token || !user || !title || !dueDate) return;   // controllo dati obbligatori
 
     const taskData: Omit<Task, "id"> = {
       title,
@@ -46,13 +51,14 @@ const TaskFormModal = ({ mode, taskToEdit, onClose, onSuccess }: TaskFormModalPr
       userId: user.id,
     };
 
+    // Se modalità add, crea task nuova - se edit, aggiorna quella esistente
     const result =
       mode === "add" ? await createTask(taskData, token) : await editTask({ ...taskToEdit!, ...taskData }, token);
 
     if (result.success) {
       reloadTasks?.();
-
       setToast(null);
+
       setTimeout(() => {
         setToast({
           message: mode === "add" ? "Task created successfully!" : "Task updated successfully!",

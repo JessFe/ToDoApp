@@ -7,7 +7,7 @@ const GreetingsBar = () => {
 
   // Calcolo del saluto in base all'orario
   const getGreeting = () => {
-    const hour = new Date().getHours();
+    const hour = new Date().getHours();    // Ottiene l'ora corrente
 
     if (hour >= 5 && hour < 12) return "Good morning";
     if (hour >= 12 && hour < 17) return "Good afternoon";
@@ -17,7 +17,7 @@ const GreetingsBar = () => {
 
   // Gestione del logout
   const handleLogout = () => {
-    logout(); // pulisce context e localStorage
+    logout();      // pulisce context e localStorage
     navigate("/login");
   };
 

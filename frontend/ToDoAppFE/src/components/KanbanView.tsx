@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useUserContext } from "../context/UserContext";
 import { useFiltersContext } from "../context/FiltersContext";
-import { getTasksByUserId, editTask } from "../services/api";
+import { getTasksByUserId, editTask } from "../services/api";   // api per ottenere e modificare task
 import KanbanColumn from "./KanbanColumn";
 import TaskDetailsModal from "./TaskDetailsModal";
 import TaskFormModal from "./TaskFormModal";
@@ -11,16 +11,21 @@ const KanbanView = () => {
   const { user, token } = useUserContext();
   const { statusFilter, listsFilter, timeFilter, setReloadTasks, userLists } = useFiltersContext();
 
+  // stati
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-  const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);   // Stato per la modale con dettagli della task
+  const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);       // Stato la modale di modifica
 
+  // Funzione per caricare i task da backend
   const fetchTasks = useCallback(async () => {
     if (!user?.id || !token) return;
+
     const result = await getTasksByUserId(user.id, token);
+
     if (result.success) {
+      // Aggiunge nome e colore lista a ogni task
       const enrichedTasks = result.data.map((task: Task) => {
         const list = userLists.find((l) => l.id === task.listId);
         return {
@@ -37,13 +42,15 @@ const KanbanView = () => {
     setLoading(false);
   }, [user?.id, token, userLists]);
 
+  // Rende la funzione fetchTasks richiamabile da fuori tramite context
   setReloadTasks?.(() => fetchTasks);
 
+  // Carica task al mount e ogni volta che cambiano
   useEffect(() => {
     fetchTasks();
   }, [user, token, setReloadTasks, userLists, fetchTasks, setReloadTasks]);
 
-  // Cambia lo status e aggiorna localmente
+  // Aggiorna lo status di una task
   const handleStatusChange = async (taskId: number, newStatus: Task["status"]) => {
     const taskToUpdate = tasks.find((t) => t.id === taskId);
     if (!taskToUpdate || !token || !user) return;
@@ -56,12 +63,14 @@ const KanbanView = () => {
 
     const result = await editTask(updatedTask, token);
     if (result.success) {
+      // Aggiorna lo stato locale
       setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task)));
     } else {
       console.error("Errore aggiornamento status:", result.message);
     }
   };
 
+  // Filtra i task in base ai filtri selezionati
   const filteredTasks = tasks.filter((task) => {
     const matchStatus = statusFilter.includes(task.status);
 
@@ -78,16 +87,18 @@ const KanbanView = () => {
       const dueDate = new Date(task.dueDate);
       dueDate.setHours(0, 0, 0, 0);
 
-      const diffDays = Math.floor((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+      // la differenza di giorni tra oggi e la data di scadenza
+      const diffDays = Math.floor((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));  //Converte i millisecondi in giorni
 
       if (timeFilter === "Today") {
-        return diffDays === 0;
+        return diffDays === 0;   // Mostra solo le task che scadono oggi
       }
 
       const days = parseInt(timeFilter); // es "3 days" + 3
-
       if (isNaN(days)) return false;
 
+      // se Done: 3 days mostra le task con data odierna + 2 giorni passati
+      // se ToDo o Doing: 3 days mostra le task con data odierna + 2 giorni futuri
       if (task.status === "Done") {
         return diffDays >= -(days - 1) && diffDays <= 0;
       } else {
@@ -98,6 +109,7 @@ const KanbanView = () => {
     return matchStatus && matchList && matchTime;
   });
 
+  // Divide i task filtrati in colonne
   const toDo = filteredTasks.filter((task) => task.status === "To Do");
   const doing = filteredTasks.filter((task) => task.status === "Doing");
   const done = filteredTasks.filter((task) => task.status === "Done");

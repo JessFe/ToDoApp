@@ -4,11 +4,12 @@ import FiltersDropdown from "./FiltersDropdown";
 import TaskFormModal from "./TaskFormModal";
 
 const FiltersBar = () => {
-  const [showDropdown, setShowDropdown] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
-  const [showAddModal, setShowAddModal] = useState(false);
-  const { reloadTasks } = useFiltersContext();
+  const [showDropdown, setShowDropdown] = useState(false);   // Stato che controlla se mostrare il menu a tendina dei filtri
+  const dropdownRef = useRef<HTMLDivElement | null>(null);   // Ref per rilevare click fuori dal dropdown
+  const [showAddModal, setShowAddModal] = useState(false);   // Stato che controlla se mostrare la modale Add task
+  const { reloadTasks } = useFiltersContext();               // Accede alla funzione per ricaricare le tasks
 
+  // Data odierna
   const today = new Date();
   const day = today.getDate();
   const month = today.toLocaleString("en-US", { month: "long" });
@@ -21,6 +22,7 @@ const FiltersBar = () => {
       }
     };
 
+    // Se il dropdown è aperto, aggiunge il listener
     if (showDropdown) {
       document.addEventListener("mousedown", handleClickOutside);
     }

@@ -1,31 +1,40 @@
 import { useState, useEffect } from "react";
-import { useFiltersContext, List } from "../context/FiltersContext";
+import { useFiltersContext, List } from "../context/FiltersContext";   // context dei filtri, che contiene le liste dell'utente
 import { createList, updateList, deleteList } from "../services/api";
-import { useUserContext } from "../context/UserContext";
+import { useUserContext } from "../context/UserContext";      // per accedere al token e all'id utente
 import ToastMessage from "./ToastMessage";
 
+// Tipo props ricevute (solo funzione chiusura modale)
 type ManageListsModalProps = {
   onClose: () => void;
 };
 
+// colori disponibili per le liste
 const availableColors = ["blue", "green", "yellow", "orange", "gray"];
 
 const ManageListsModal = ({ onClose }: ManageListsModalProps) => {
-  const { user, token } = useUserContext();
-  const { userLists, loadUserLists, reloadTasks } = useFiltersContext();
-  const [editedLists, setEditedLists] = useState<List[]>([...userLists]);
-  const [newList, setNewList] = useState<{ name: string; color: string }>({ name: "", color: "blue" });
+  const { user, token } = useUserContext();                                  // dati utente e token autenticazione
+  const { userLists, loadUserLists, reloadTasks } = useFiltersContext();   // Dati liste, funzione per ricaricarle, trigger per aggiornare le task
+  const [editedLists, setEditedLists] = useState<List[]>([...userLists]);  // Stato locale delle liste modificate (copiate dalle userLists)
+  const [newList, setNewList] = useState<{ name: string; color: string }>({ name: "", color: "blue" });    // Stato della nuova lista da creare
   const [toast, setToast] = useState<{ message: string | React.ReactNode; type: "success" | "error" } | null>(null);
-  const [deletingListId, setDeletingListId] = useState<number | null>(null);
+  const [deletingListId, setDeletingListId] = useState<number | null>(null);  // ID della lista in fase di eliminazione (per evitare doppi click)
 
+  // Aggiorna lo stato locale quando userLists cambia
   useEffect(() => {
     setEditedLists([...userLists]);
   }, [userLists]);
 
+  // Modifica campo nome o colore di una lista specifica
   const handleChange = (id: number, field: keyof List, value: string) => {
-    setEditedLists((prev) => prev.map((list) => (list.id === id ? { ...list, [field]: value } : list)));
+    setEditedLists((prev) =>
+      prev.map((list) =>
+      (list.id === id
+        ? { ...list, [field]: value }  // Se è la lista giusta, aggiorna il campo richiesto
+        : list)));           // Altrimenti lascia la lista com'è
   };
 
+  // Salva modifiche di una lista esistente
   const handleUpdate = async (list: List) => {
     if (!user || !token) return;
 
@@ -36,8 +45,8 @@ const ManageListsModal = ({ onClose }: ManageListsModalProps) => {
     const result = await updateList(list, token);
 
     if (result.success) {
-      await loadUserLists();
-      await reloadTasks?.();
+      await loadUserLists();    // aggiorna l'elenco
+      await reloadTasks?.();    // aggiorna le task
 
       setToast(null);
       setTimeout(() => {
@@ -51,6 +60,7 @@ const ManageListsModal = ({ onClose }: ManageListsModalProps) => {
     }
   };
 
+  // Esegue l'eliminazione vera e propria dopo conferma
   const confirmDelete = async (id: number) => {
     if (!token) return;
 
@@ -81,11 +91,13 @@ const ManageListsModal = ({ onClose }: ManageListsModalProps) => {
     }, 100);
   };
 
+  // Mostra conferma di eliminazione
   const handleDelete = async (id: number) => {
     if (deletingListId !== null) return; // blocca se già in corso
 
-    setDeletingListId(id); // imposta quale lista eliminare
+    setDeletingListId(id); // salva l'id per prevenire doppio click
 
+    // toast conferma o annulla
     setToast({
       message: (
         <>
@@ -110,11 +122,14 @@ const ManageListsModal = ({ onClose }: ManageListsModalProps) => {
     });
   };
 
+  // Aggiunge una nuova lista
   const handleAdd = async () => {
     if (!user || !token || newList.name.trim() === "") return;
+
     const result = await createList({ ...newList, userId: user.id }, token);
+
     if (result.success) {
-      setNewList({ name: "", color: "green" });
+      setNewList({ name: "", color: "blue" });   // reset
       await loadUserLists();
       if (reloadTasks) reloadTasks();
       setToast(null);
