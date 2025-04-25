@@ -31,7 +31,7 @@ const FiltersBar = () => {
   }, [showDropdown]);
 
   return (
-    <div className="filters-bar sticky-top bg-white py-3 border-bottom rounded shadow-sm px-3">
+    <div className="filters-bar bg-white py-3 border-bottom rounded shadow-sm px-3">
       <div className="container d-flex justify-content-between align-items-center">
         {/* Data attuale */}
         <div className="d-flex align-items-center gap-3">
@@ -43,14 +43,14 @@ const FiltersBar = () => {
         </div>
 
         {/* Pulsanti a destra */}
-        <div className="d-flex gap-3 align-items-center">
-          <button className="btn btn-sm btn-primary fw-semibold px-4" onClick={() => setShowAddModal(true)}>
+        <div className="d-flex gap-2 gap-md-3 align-items-center">
+          <button className="btn btn-sm btn-primary fw-semibold px-3 px-md-4" onClick={() => setShowAddModal(true)}>
             <i className="bi bi-plus-square me-2"></i>Add Task
           </button>
 
           <div className="position-relative" ref={dropdownRef}>
             <button
-              className="btn btn-sm btn-outline-primary border-2 px-4"
+              className="btn btn-sm btn-outline-primary border-2 px-3 px-md-4"
               onClick={() => setShowDropdown(!showDropdown)}
             >
               <i className="bi bi-sliders me-2"></i>
@@ -58,7 +58,7 @@ const FiltersBar = () => {
             </button>
 
             {showDropdown && (
-              <div className="position-absolute end-0 mt-2 z-3">
+              <div className="position-absolute end-0 mt-2 z-3 filters-dropdown">
                 <FiltersDropdown />
               </div>
             )}

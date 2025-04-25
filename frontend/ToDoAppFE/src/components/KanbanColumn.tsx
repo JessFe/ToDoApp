@@ -10,7 +10,7 @@ type KanbanColumnProps = {
 
 const KanbanColumn = ({ title, tasks, onStatusChange, onCardClick }: KanbanColumnProps) => {
   return (
-    <div className="mt-4">
+    <div className="mt-2 mt-md-4">
       {/* Titolo colonna con numero task */}
       <h6 className="mb-3 mt-2 text-center ">
         {title} <span className="badge bg-primary bg-opacity-75 ms-2">{tasks.length}</span>
