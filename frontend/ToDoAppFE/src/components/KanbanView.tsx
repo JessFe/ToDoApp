@@ -80,6 +80,10 @@ const KanbanView = () => {
 
       const diffDays = Math.floor((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 
+      if (timeFilter === "Today") {
+        return diffDays === 0;
+      }
+
       const days = parseInt(timeFilter); // es "3 days" + 3
 
       if (isNaN(days)) return false;
