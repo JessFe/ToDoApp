@@ -3,12 +3,15 @@ backend/ToDoApp/ToDoApp/bin/
 backend/ToDoApp/ToDoApp/obj/
 backend/ToDoApp/ToDoApp/appsettings.json
 backend/ToDoApp/ToDoApp/appsettings.Development.json
+!backend/ToDoApp/ToDoApp/appsettings.Template.json
 
 # ─── FRONTEND ────────────────────────────────────────
 frontend/ToDoAppFE/node_modules
 frontend/ToDoAppFE/dist
 frontend/ToDoAppFE/dist-ssr
+frontend/ToDoAppFE/.vite/
 frontend/ToDoAppFE/.env
+!frontend/ToDoAppFE/.env.example
 
 # ─── LOGS ─────────────────────────────────────────────
 logs
