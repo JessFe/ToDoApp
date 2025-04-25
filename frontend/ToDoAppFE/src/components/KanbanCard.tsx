@@ -18,16 +18,17 @@ const statusColorMap: Record<Task["status"], string> = {
 type KanbanCardProps = {
   task: Task;
   onStatusChange: (taskId: number, newStatus: Task["status"]) => void;
+  onClick?: () => void;
 };
 
-const KanbanCard = ({ task, onStatusChange }: KanbanCardProps) => {
+const KanbanCard = ({ task, onStatusChange, onClick }: KanbanCardProps) => {
   const truncate = (text?: string) => {
     if (!text) return "";
     return text.length > 40 ? text.substring(0, 40) + ".." : text;
   };
 
   return (
-    <div className="card p-3 shadow-sm task-card bg-white" role="button">
+    <div className="card p-3 shadow-sm task-card bg-white" role="button" onClick={onClick}>
       <h6 className="mb-2">{task.title}</h6>
 
       {task.listName && (
@@ -63,22 +64,41 @@ const KanbanCard = ({ task, onStatusChange }: KanbanCardProps) => {
             type="button"
             data-bs-toggle="dropdown"
             aria-expanded="false"
+            onClick={(e) => e.stopPropagation()}
           >
             {task.status}
           </button>
           <ul className="dropdown-menu bg-white fs-7">
             <li>
-              <button className="dropdown-item bg-cyan-100" onClick={() => onStatusChange(task.id, "To Do")}>
+              <button
+                className="dropdown-item bg-cyan-100"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onStatusChange(task.id, "To Do");
+                }}
+              >
                 To Do
               </button>
             </li>
             <li>
-              <button className="dropdown-item bg-yellow-100" onClick={() => onStatusChange(task.id, "Doing")}>
+              <button
+                className="dropdown-item bg-yellow-100"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onStatusChange(task.id, "Doing");
+                }}
+              >
                 Doing
               </button>
             </li>
             <li>
-              <button className="dropdown-item bg-teal-100" onClick={() => onStatusChange(task.id, "Done")}>
+              <button
+                className="dropdown-item bg-teal-100"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onStatusChange(task.id, "Done");
+                }}
+              >
                 Done
               </button>
             </li>

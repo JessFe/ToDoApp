@@ -53,8 +53,6 @@ const FiltersDropdown = () => {
 
   return (
     <div className="filters-dropdown bg-white border rounded shadow-sm p-3">
-      {/* <h6 className="fw-bold">Filters</h6> */}
-
       {/* STATUS */}
       <div className="mb-4">
         <div className="d-flex align-items-center gap-2 mb-2">

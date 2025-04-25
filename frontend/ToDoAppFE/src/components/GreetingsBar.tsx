@@ -6,8 +6,14 @@ const GreetingsBar = () => {
   const navigate = useNavigate();
 
   // Calcolo del saluto in base all'orario
-  const currentHour = new Date().getHours();
-  const greeting = currentHour >= 5 && currentHour < 17 ? "Good morning" : "Good evening";
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+
+    if (hour >= 5 && hour < 12) return "Good morning";
+    if (hour >= 12 && hour < 17) return "Good afternoon";
+    if (hour >= 17 && hour < 23) return "Good evening";
+    return "Hello";
+  };
 
   // Gestione del logout
   const handleLogout = () => {
@@ -18,7 +24,7 @@ const GreetingsBar = () => {
   return (
     <div className="d-flex justify-content-between align-items-center p-3 bg-white shadow-sm rounded mb-4">
       <h5 className="m-0">
-        {greeting}, {user?.name}!
+        {getGreeting()}, {user?.name}!
       </h5>
       <button className="btn btn-primary btn-sm" onClick={handleLogout}>
         Logout

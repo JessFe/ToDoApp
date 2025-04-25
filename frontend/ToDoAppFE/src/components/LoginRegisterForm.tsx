@@ -62,7 +62,7 @@ const LoginRegisterForm = ({ mode, onSubmit }: Props) => {
     <div className="container mt-5">
       <div className="row justify-content-center">
         <div className="col-md-6 col-lg-12">
-          <div className="card log-card bg-light bg-opacity-75 shadow-lg p-4">
+          <div className="card log-card bg-light shadow-lg p-4">
             <h2 className="mb-5">{mode === "login" ? "Login" : "Register"}</h2>
 
             {error && (

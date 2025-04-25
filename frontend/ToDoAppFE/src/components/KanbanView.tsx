@@ -1,32 +1,47 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useUserContext } from "../context/UserContext";
 import { useFiltersContext } from "../context/FiltersContext";
 import { getTasksByUserId, editTask } from "../services/api";
 import KanbanColumn from "./KanbanColumn";
+import TaskDetailsModal from "./TaskDetailsModal";
+import TaskFormModal from "./TaskFormModal";
 import { Task } from "../types";
 
 const KanbanView = () => {
   const { user, token } = useUserContext();
-  const { statusFilter, listsFilter, timeFilter, setReloadTasks } = useFiltersContext();
+  const { statusFilter, listsFilter, timeFilter, setReloadTasks, userLists } = useFiltersContext();
 
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
+
+  const fetchTasks = useCallback(async () => {
+    if (!user?.id || !token) return;
+    const result = await getTasksByUserId(user.id, token);
+    if (result.success) {
+      const enrichedTasks = result.data.map((task: Task) => {
+        const list = userLists.find((l) => l.id === task.listId);
+        return {
+          ...task,
+          listName: list?.name ?? task.listName,
+          listColor: list?.color ?? task.listColor,
+        };
+      });
+
+      setTasks(enrichedTasks);
+    } else {
+      setError(result.message);
+    }
+    setLoading(false);
+  }, [user?.id, token, userLists]);
+
+  setReloadTasks?.(() => fetchTasks);
 
   useEffect(() => {
-    const fetchTasks = async () => {
-      if (!user?.id || !token) return;
-      const result = await getTasksByUserId(user.id, token);
-      if (result.success) setTasks(result.data);
-      else setError(result.message);
-      setLoading(false);
-    };
-
     fetchTasks();
-    if (setReloadTasks) {
-      setReloadTasks(() => fetchTasks);
-    }
-  }, [user, token, setReloadTasks]);
+  }, [user, token, setReloadTasks, userLists, fetchTasks, setReloadTasks]);
 
   // Cambia lo status e aggiorna localmente
   const handleStatusChange = async (taskId: number, newStatus: Task["status"]) => {
@@ -78,11 +93,6 @@ const KanbanView = () => {
 
     return matchStatus && matchList && matchTime;
   });
-  console.log("DEBUG listsFilter:", listsFilter);
-  console.log(
-    "DEBUG task.listId:",
-    tasks.map((t) => ({ id: t.id, listId: t.listId }))
-  );
 
   const toDo = filteredTasks.filter((task) => task.status === "To Do");
   const doing = filteredTasks.filter((task) => task.status === "Doing");
@@ -94,14 +104,57 @@ const KanbanView = () => {
   return (
     <div className="row">
       <div className="col-md-4">
-        <KanbanColumn title="To Do" tasks={toDo} onStatusChange={handleStatusChange} />
+        <KanbanColumn
+          title="To Do"
+          tasks={toDo}
+          onStatusChange={handleStatusChange}
+          onCardClick={(task) => setSelectedTask(task)}
+        />
       </div>
       <div className="col-md-4">
-        <KanbanColumn title="Doing" tasks={doing} onStatusChange={handleStatusChange} />
+        <KanbanColumn
+          title="Doing"
+          tasks={doing}
+          onStatusChange={handleStatusChange}
+          onCardClick={(task) => setSelectedTask(task)}
+        />
       </div>
       <div className="col-md-4">
-        <KanbanColumn title="Done" tasks={done} onStatusChange={handleStatusChange} />
+        <KanbanColumn
+          title="Done"
+          tasks={done}
+          onStatusChange={handleStatusChange}
+          onCardClick={(task) => setSelectedTask(task)}
+        />
       </div>
+      {selectedTask && (
+        <TaskDetailsModal
+          task={selectedTask}
+          onClose={() => setSelectedTask(null)}
+          onEdit={() => {
+            setTaskToEdit(selectedTask);
+            setSelectedTask(null);
+          }}
+          onDeleteSuccess={() => {
+            setSelectedTask(null);
+            setTimeout(() => {
+              setReloadTasks?.(fetchTasks);
+              fetchTasks();
+            }, 0);
+          }}
+        />
+      )}
+      {taskToEdit && (
+        <TaskFormModal
+          mode="edit"
+          taskToEdit={taskToEdit}
+          onClose={() => setTaskToEdit(null)}
+          onSuccess={() => {
+            setTaskToEdit(null);
+            setReloadTasks?.(fetchTasks);
+          }}
+        />
+      )}
     </div>
   );
 };

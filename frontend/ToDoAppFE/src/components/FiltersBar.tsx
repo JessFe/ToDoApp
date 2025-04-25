@@ -1,9 +1,13 @@
 import { useEffect, useRef, useState } from "react";
+import { useFiltersContext } from "../context/FiltersContext";
 import FiltersDropdown from "./FiltersDropdown";
+import TaskFormModal from "./TaskFormModal";
 
 const FiltersBar = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const { reloadTasks } = useFiltersContext();
 
   const today = new Date();
   const day = today.getDate();
@@ -40,8 +44,7 @@ const FiltersBar = () => {
 
         {/* Pulsanti a destra */}
         <div className="d-flex gap-3 align-items-center">
-          <button className="btn btn-sm btn-primary fw-semibold px-4">
-            {" "}
+          <button className="btn btn-sm btn-primary fw-semibold px-4" onClick={() => setShowAddModal(true)}>
             <i className="bi bi-plus-square me-2"></i>Add Task
           </button>
 
@@ -62,6 +65,16 @@ const FiltersBar = () => {
           </div>
         </div>
       </div>
+      {showAddModal && (
+        <TaskFormModal
+          mode="add"
+          onClose={() => setShowAddModal(false)}
+          onSuccess={() => {
+            setShowAddModal(false);
+            reloadTasks?.();
+          }}
+        />
+      )}
     </div>
   );
 };

@@ -73,6 +73,29 @@ export const getTasksByUserId = async (userId: number, token: string) => {
   }
 };
 
+export const createTask = async (task: Omit<Task, "id">, token: string) => {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/tasks`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(task),
+    });
+
+    if (!response.ok) {
+      const result = await response.json();
+      return { success: false, message: result.message || "Failed to create task" };
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Create task error:", error);
+    return { success: false, message: "An error occurred while creating task" };
+  }
+};
+
 export const editTask = async (task: Task, token: string) => {
   try {
     const response = await fetch(`${import.meta.env.VITE_API_URL}/api/tasks/${task.id}`, {
@@ -93,6 +116,27 @@ export const editTask = async (task: Task, token: string) => {
   } catch (error) {
     console.error("Update task error:", error);
     return { success: false, message: "An error occurred while updating task" };
+  }
+};
+
+export const deleteTask = async (taskId: number, token: string) => {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/tasks/${taskId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const result = await response.json();
+      return { success: false, message: result.message || "Failed to delete task" };
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Delete task error:", error);
+    return { success: false, message: "An error occurred while deleting the task" };
   }
 };
 

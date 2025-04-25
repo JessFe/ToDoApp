@@ -23,7 +23,8 @@ type FiltersContextType = {
   setListsFilter: (listIds: number[]) => void;
   setBackground: (color: FilterBackground) => void;
   loadUserLists: () => void;
-  reloadTasks?: () => void;
+  reloadTasks?: (() => void) | null;
+
   setReloadTasks?: (fn: () => void) => void;
 };
 
@@ -50,7 +51,7 @@ export const FiltersContextProvider = ({ children }: { children: React.ReactNode
   const [listsFilter, setListsFilter] = useState<number[]>([]);
   const [background, setBackground] = useState<FilterBackground>(getInitialBackground());
   const [userLists, setUserLists] = useState<List[]>([]);
-  const [reloadTasks, setReloadTasks] = useState<(() => void) | undefined>(undefined);
+  const [reloadTasks, setReloadTasks] = useState<(() => void) | null>(null);
 
   const { user, token } = useUserContext();
 
@@ -67,7 +68,7 @@ export const FiltersContextProvider = ({ children }: { children: React.ReactNode
     }
   };
 
-  // Carica le liste appena l’utente è loggato
+  // Carica le liste appena l'utente è loggato
   useEffect(() => {
     loadUserLists();
   }, [user, token]);

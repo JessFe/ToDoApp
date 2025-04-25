@@ -15,7 +15,8 @@ const ManageListsModal = ({ onClose }: ManageListsModalProps) => {
   const { userLists, loadUserLists, reloadTasks } = useFiltersContext();
   const [editedLists, setEditedLists] = useState<List[]>([...userLists]);
   const [newList, setNewList] = useState<{ name: string; color: string }>({ name: "", color: "blue" });
-  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+  const [toast, setToast] = useState<{ message: string | React.ReactNode; type: "success" | "error" } | null>(null);
+  const [deletingListId, setDeletingListId] = useState<number | null>(null);
 
   useEffect(() => {
     setEditedLists([...userLists]);
@@ -27,26 +28,86 @@ const ManageListsModal = ({ onClose }: ManageListsModalProps) => {
 
   const handleUpdate = async (list: List) => {
     if (!user || !token) return;
+
+    // Chiudi eventuali toast di conferma ancora aperti
+    setToast(null);
+    setDeletingListId(null);
+
     const result = await updateList(list, token);
+
     if (result.success) {
       await loadUserLists();
-      if (reloadTasks) reloadTasks();
-      setToast({ message: "List updated successfully", type: "success" });
+      await reloadTasks?.();
+
+      setToast(null);
+      setTimeout(() => {
+        setToast({ message: "List updated successfully", type: "success" });
+      }, 50);
     } else {
-      setToast({ message: "Update failed", type: "error" });
+      setToast(null);
+      setTimeout(() => {
+        setToast({ message: "Update failed", type: "error" });
+      }, 50);
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const confirmDelete = async (id: number) => {
     if (!token) return;
-    const result = await deleteList(id, token);
-    if (result.success) {
-      await loadUserLists();
-      if (reloadTasks) reloadTasks();
-      setToast({ message: "List deleted", type: "success" });
-    } else {
-      setToast({ message: "Delete failed", type: "error" });
-    }
+
+    setToast(null);
+    setDeletingListId(null);
+
+    setTimeout(async () => {
+      const result = await deleteList(id, token);
+
+      if (result.success) {
+        await loadUserLists();
+        if (reloadTasks) reloadTasks();
+        setToast(null);
+        setTimeout(() => {
+          setToast({ message: "List deleted", type: "success" });
+        }, 50);
+
+        setTimeout(() => setToast(null), 2000);
+      } else {
+        setToast(null);
+        setTimeout(() => {
+          setToast({
+            message: "Delete failed - Check if the list is used in any task.",
+            type: "error",
+          });
+        }, 50);
+      }
+    }, 100);
+  };
+
+  const handleDelete = async (id: number) => {
+    if (deletingListId !== null) return; // blocca se già in corso
+
+    setDeletingListId(id); // imposta quale lista eliminare
+
+    setToast({
+      message: (
+        <>
+          <div>Are you sure you want to delete this list?</div>
+          <div className="mt-2 pt-2 border-top d-flex gap-2">
+            <button className="btn btn-sm btn-danger" onClick={() => confirmDelete(id)}>
+              Confirm
+            </button>
+            <button
+              className="btn btn-sm btn-outline-danger"
+              onClick={() => {
+                setToast(null);
+                setDeletingListId(null);
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        </>
+      ),
+      type: "error",
+    });
   };
 
   const handleAdd = async () => {
@@ -56,14 +117,20 @@ const ManageListsModal = ({ onClose }: ManageListsModalProps) => {
       setNewList({ name: "", color: "green" });
       await loadUserLists();
       if (reloadTasks) reloadTasks();
-      setToast({ message: "List created!", type: "success" });
+      setToast(null);
+      setTimeout(() => {
+        setToast({ message: "List created!", type: "success" });
+      }, 50);
     } else {
-      setToast({ message: "Failed to create list", type: "error" });
+      setToast(null);
+      setTimeout(() => {
+        setToast({ message: "Failed to create list", type: "error" });
+      }, 50);
     }
   };
 
   return (
-    <div className="modal d-block" tabIndex={-1} role="dialog" style={{ backgroundColor: "#00000080" }}>
+    <div className="modal d-block bg-black bg-opacity-50" tabIndex={-1} role="dialog">
       <div className="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div className="modal-content">
           <div className="modal-header">
