@@ -104,30 +104,38 @@ const KanbanView = () => {
   return (
     <div className="kanban-wrapper">
       <div className="row flex-nowrap overflow-auto">
-        <div className="col-12 col-md-4">
-          <KanbanColumn
-            title="To Do"
-            tasks={toDo}
-            onStatusChange={handleStatusChange}
-            onCardClick={(task) => setSelectedTask(task)}
-          />
-        </div>
-        <div className="col-10 col-md-4">
-          <KanbanColumn
-            title="Doing"
-            tasks={doing}
-            onStatusChange={handleStatusChange}
-            onCardClick={(task) => setSelectedTask(task)}
-          />
-        </div>
-        <div className="col-10 col-md-4">
-          <KanbanColumn
-            title="Done"
-            tasks={done}
-            onStatusChange={handleStatusChange}
-            onCardClick={(task) => setSelectedTask(task)}
-          />
-        </div>
+        {toDo.length > 0 && (
+          <div className="col-12 col-md-4">
+            <KanbanColumn
+              title="To Do"
+              tasks={toDo}
+              onStatusChange={handleStatusChange}
+              onCardClick={(task) => setSelectedTask(task)}
+            />
+          </div>
+        )}
+
+        {doing.length > 0 && (
+          <div className="col-12 col-md-4">
+            <KanbanColumn
+              title="Doing"
+              tasks={doing}
+              onStatusChange={handleStatusChange}
+              onCardClick={(task) => setSelectedTask(task)}
+            />
+          </div>
+        )}
+
+        {done.length > 0 && (
+          <div className="col-12 col-md-4">
+            <KanbanColumn
+              title="Done"
+              tasks={done}
+              onStatusChange={handleStatusChange}
+              onCardClick={(task) => setSelectedTask(task)}
+            />
+          </div>
+        )}
       </div>
 
       {/* Modali */}
